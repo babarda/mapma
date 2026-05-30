@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #f5efe4; /* parchment */
+  --foreground: #2b231b; /* ink */
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* MapLibre popups restyled to match the archival aesthetic. */
+.maplibregl-popup-content {
+  padding: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(43, 33, 26, 0.25);
+  background: #f7f3ec;
+}
+
+.maplibregl-popup-close-button {
+  font-size: 18px;
+  padding: 2px 8px;
+  color: #4a3d30;
+}
+
+.maplibregl-ctrl-group {
+  background: #f7f3ec;
+}

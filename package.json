@@ -1,0 +1,42 @@
+{
+  "name": "mapma",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MAPMA — a digital archive of Morocco's collective memory. Upload historical photos, AI identifies location/era/context, explore on an interactive map.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.658.1",
+    "@google/generative-ai": "^0.21.0",
+    "@hookform/resolvers": "^3.9.0",
+    "@supabase/supabase-js": "^2.45.4",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.441.0",
+    "maplibre-gl": "^4.7.1",
+    "next": "^14.2.35",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.53.0",
+    "react-map-gl": "^7.1.7",
+    "server-only": "^0.0.1",
+    "sharp": "^0.33.5",
+    "supercluster": "^8.0.1",
+    "tailwind-merge": "^2.5.2",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.16.5",
+    "@types/react": "^18.3.7",
+    "@types/react-dom": "^18.3.0",
+    "@types/supercluster": "^7.1.3",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.12",
+    "typescript": "^5.6.2"
+  }
+}

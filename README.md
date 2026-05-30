@@ -6,7 +6,7 @@ an interactive map.
 
 > **Status:** Foundation + interactive map. Upload, AI extraction, and auth come next.
 
-## Stack (⭐ recommended bundle)
+## Stack
 
 - **Next.js 14 (App Router) + TypeScript + TailwindCSS** — UI, museum aesthetic
 - **MapLibre GL** via `react-map-gl` — interactive map with clustering

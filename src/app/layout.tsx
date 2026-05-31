@@ -14,10 +14,29 @@ const body = Inter({
   display: "swap",
 });
 
+const DESCRIPTION =
+  "A digital archive of Morocco's collective memory. Upload historical photos and explore the country through time on an interactive map.";
+
 export const metadata: Metadata = {
-  title: "MAPMA — Morocco's Photographic Memory",
-  description:
-    "A digital archive of Morocco's collective memory. Upload historical photos and explore the country through time on an interactive map.",
+  metadataBase: new URL("https://mapma.org"),
+  title: {
+    default: "MAPMA — Morocco's Photographic Memory",
+    template: "%s — MAPMA",
+  },
+  description: DESCRIPTION,
+  openGraph: {
+    type: "website",
+    siteName: "MAPMA",
+    url: "https://mapma.org",
+    title: "MAPMA — Morocco's Photographic Memory",
+    description: DESCRIPTION,
+    locale: "en",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "MAPMA — Morocco's Photographic Memory",
+    description: DESCRIPTION,
+  },
 };
 
 export default function RootLayout({

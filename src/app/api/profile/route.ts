@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { getUserIdFromRequest } from "@/lib/auth";
-import { getDisplayName, setDisplayName } from "@/lib/db";
+import { getDisplayName, getUserRole, setDisplayName } from "@/lib/db";
 import { displayNameSchema } from "@/lib/schemas";
 
 export const runtime = "nodejs";
@@ -13,8 +13,11 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Sign in required" }, { status: 401 });
   }
   try {
-    const username = await getDisplayName(userId);
-    return NextResponse.json({ username });
+    const [username, role] = await Promise.all([
+      getDisplayName(userId),
+      getUserRole(userId),
+    ]);
+    return NextResponse.json({ username, role });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to load profile";
     return NextResponse.json({ error: message }, { status: 500 });

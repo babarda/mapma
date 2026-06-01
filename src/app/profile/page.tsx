@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Upload } from "lucide-react";
+import { ArrowLeft, ShieldCheck, Upload } from "lucide-react";
 
 import type { Photo } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -33,6 +33,7 @@ export default function ProfilePage() {
   const [displayName, setDisplayName] = useState("");
   const [savingName, setSavingName] = useState(false);
   const [nameMsg, setNameMsg] = useState<string | null>(null);
+  const [role, setRole] = useState<string | null>(null);
 
   useEffect(() => {
     if (loading || !user) return;
@@ -44,7 +45,10 @@ export default function ProfilePage() {
           headers: token ? { authorization: `Bearer ${token}` } : undefined,
         });
         const data = await res.json();
-        if (active && res.ok) setDisplayName(data.username ?? "");
+        if (active && res.ok) {
+          setDisplayName(data.username ?? "");
+          setRole(data.role ?? null);
+        }
       } catch {
         /* non-fatal */
       }
@@ -191,6 +195,17 @@ export default function ProfilePage() {
               </div>
               {nameMsg && <p className="mt-2 text-xs text-ink/60">{nameMsg}</p>}
             </form>
+
+            {role === "admin" && (
+              <div className="mt-5 border-t border-sepia-100 pt-4">
+                <Link
+                  href="/admin"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-ink px-4 py-2 text-sm font-medium text-parchment transition hover:bg-ink/90"
+                >
+                  <ShieldCheck className="h-4 w-4" /> Open admin dashboard
+                </Link>
+              </div>
+            )}
           </section>
 
           {/* Summary counts */}

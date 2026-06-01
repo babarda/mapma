@@ -271,3 +271,83 @@ export async function setDisplayName(
   if (error) throw new Error(error.message);
   return (data?.username as string | null) ?? null;
 }
+
+// ---------------------------------------------------------------------------
+// Admin / accounts
+// ---------------------------------------------------------------------------
+
+// The current user's role (member | moderator | admin), or null if unknown.
+export async function getUserRole(userId: string): Promise<string | null> {
+  if (!hasSupabaseAdmin) return null;
+  const sb = getSupabaseAdmin()!;
+  const { data, error } = await sb
+    .from("profiles")
+    .select("role")
+    .eq("id", userId)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  return (data?.role as string | null) ?? null;
+}
+
+export interface AdminAccount {
+  id: string;
+  email: string | null;
+  username: string | null;
+  role: string;
+  photoCount: number;
+  createdAt: string;
+  lastSignInAt: string | null;
+}
+
+// Full account roster for the admin dashboard: auth users joined with their
+// public profile (display name + role) and a count of photos they've uploaded.
+export async function listAccounts(): Promise<AdminAccount[]> {
+  if (!hasSupabaseAdmin) return [];
+  const sb = getSupabaseAdmin()!;
+
+  // 1) Auth users (email, created_at, last sign-in). Admin API, service role.
+  const { data: usersData, error: usersErr } = await sb.auth.admin.listUsers({
+    page: 1,
+    perPage: 1000,
+  });
+  if (usersErr) throw new Error(usersErr.message);
+  const users = usersData.users;
+
+  // 2) Profiles (display name + role), keyed by id.
+  const { data: profs, error: profErr } = await sb
+    .from("profiles")
+    .select("id, username, role");
+  if (profErr) throw new Error(profErr.message);
+  const profMap = new Map(
+    (profs as { id: string; username: string | null; role: string | null }[]).map(
+      (p) => [p.id, p],
+    ),
+  );
+
+  // 3) Photo counts per uploader.
+  const { data: photoRows, error: photoErr } = await sb
+    .from("photos")
+    .select("uploader_id")
+    .limit(100000);
+  if (photoErr) throw new Error(photoErr.message);
+  const photoCounts = new Map<string, number>();
+  for (const row of photoRows as { uploader_id: string | null }[]) {
+    if (!row.uploader_id) continue;
+    photoCounts.set(row.uploader_id, (photoCounts.get(row.uploader_id) ?? 0) + 1);
+  }
+
+  return users
+    .map((u) => {
+      const prof = profMap.get(u.id);
+      return {
+        id: u.id,
+        email: u.email ?? null,
+        username: prof?.username ?? null,
+        role: prof?.role ?? "member",
+        photoCount: photoCounts.get(u.id) ?? 0,
+        createdAt: u.created_at,
+        lastSignInAt: u.last_sign_in_at ?? null,
+      };
+    })
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}

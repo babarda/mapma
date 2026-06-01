@@ -20,6 +20,20 @@ export interface PhotoRow {
   ai_confidence: number | null;
   status: Photo["status"];
   uploader_id: string | null;
+  // Optional embedded profile from a PostgREST join
+  // (`select("*, profiles:uploader_id(username)")`). A to-one relationship
+  // returns an object or null, but we tolerate an array just in case.
+  profiles?:
+    | { username: string | null }
+    | { username: string | null }[]
+    | null;
+}
+
+function uploaderName(r: PhotoRow): string | null {
+  const p = r.profiles;
+  if (!p) return null;
+  const row = Array.isArray(p) ? p[0] : p;
+  return row?.username ?? null;
 }
 
 export function rowToPhoto(r: PhotoRow): Photo {
@@ -42,5 +56,6 @@ export function rowToPhoto(r: PhotoRow): Photo {
     aiConfidence: r.ai_confidence,
     status: r.status,
     uploader: r.uploader_id,
+    uploaderName: uploaderName(r),
   };
 }

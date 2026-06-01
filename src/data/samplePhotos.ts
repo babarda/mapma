@@ -8,7 +8,7 @@ function placeholder(seed: string, w = 1200, h = 800): string {
   return `https://picsum.photos/seed/${seed}/${w}/${h}?grayscale`;
 }
 
-const SEED: Omit<Photo, "yearApproximate" | "source">[] = [
+const SEED: Omit<Photo, "yearApproximate" | "source" | "uploaderName">[] = [
   {
     id: "casa-1920-port",
     title: "Construction of the Port of Casablanca",
@@ -167,6 +167,7 @@ export const SAMPLE_PHOTOS: Photo[] = SEED.map((p) => ({
   ...p,
   yearApproximate: false,
   source: null,
+  uploaderName: null,
 }));
 
 export const YEAR_MIN = 1900;

@@ -47,3 +47,30 @@ export const publishMetaSchema = z.object({
 });
 
 export type PublishMeta = z.infer<typeof publishMetaSchema>;
+
+// A visitor comment on a photo. Comments are open to guests, so the payload
+// includes an optional display name and a honeypot field that must stay empty.
+export const commentSchema = z.object({
+  photoId: z.string().uuid("Invalid photo"),
+  body: z.string().trim().min(1, "Write a comment").max(1000, "Comment is too long"),
+  authorName: z
+    .string()
+    .trim()
+    .max(40, "Name is too long")
+    .optional()
+    .transform((v) => (v ? v : null)),
+  // Honeypot: real users never see/fill this. Bots do. Must be empty.
+  website: z.string().max(0).optional(),
+});
+
+export type CommentInput = z.infer<typeof commentSchema>;
+
+// Setting a public display name from the profile page. Empty clears it.
+export const displayNameSchema = z.object({
+  username: z
+    .string()
+    .trim()
+    .max(40, "Display name is too long")
+    .transform((v) => (v ? v : null))
+    .nullable(),
+});

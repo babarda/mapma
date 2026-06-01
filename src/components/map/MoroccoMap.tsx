@@ -20,6 +20,11 @@ type Cluster =
 
 interface Props {
   photos: Photo[];
+  /** Called when the visitor asks to open a photo's full detail view. */
+  onOpenDetail?: (photo: Photo) => void;
+  /** Fly to + select this photo. Re-triggered whenever `focusNonce` changes. */
+  focusPhoto?: Photo | null;
+  focusNonce?: number;
 }
 
 // A small framed thumbnail used for a single photo on the map.
@@ -66,7 +71,12 @@ function ClusterThumb({
   );
 }
 
-export default function MoroccoMap({ photos }: Props) {
+export default function MoroccoMap({
+  photos,
+  onOpenDetail,
+  focusPhoto,
+  focusNonce,
+}: Props) {
   const mapRef = useRef<MapRef | null>(null);
   const [selected, setSelected] = useState<Photo | null>(null);
   const [clusters, setClusters] = useState<Cluster[]>([]);
@@ -130,6 +140,21 @@ export default function MoroccoMap({ photos }: Props) {
     const center = map.unproject(point);
     map.easeTo({ center, duration: 400 });
   }, []);
+
+  // Fly to a photo requested from outside (gallery / detail "Show on map").
+  // Zooms in enough to break it out of any cluster, then opens its popup.
+  useEffect(() => {
+    if (!focusPhoto) return;
+    const map = mapRef.current?.getMap();
+    if (!map) return;
+    setSelected(focusPhoto);
+    map.easeTo({
+      center: [focusPhoto.lng, focusPhoto.lat],
+      zoom: Math.max(map.getZoom(), 13),
+      duration: 700,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusNonce]);
 
   return (
     <MapGL
@@ -238,6 +263,14 @@ export default function MoroccoMap({ photos }: Props) {
                 <p className="mt-2 text-[11px] italic text-ink/50">
                   Source: {selected.source}
                 </p>
+              )}
+              {onOpenDetail && (
+                <button
+                  onClick={() => onOpenDetail(selected)}
+                  className="mt-3 w-full rounded-full bg-sepia-700 px-3 py-1.5 text-xs font-medium text-parchment transition hover:bg-sepia-800"
+                >
+                  View details &amp; comments
+                </button>
               )}
             </div>
           </article>

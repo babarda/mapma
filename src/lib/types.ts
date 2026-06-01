@@ -44,4 +44,16 @@ export interface Photo {
   aiConfidence: number | null;
   status: VerificationStatus;
   uploader: string | null;
+  /** Public display name of the contributor (profiles.username), or null. */
+  uploaderName: string | null;
+}
+
+export interface Comment {
+  id: string;
+  photoId: string;
+  /** Public display name; null renders as "Anonymous". */
+  authorName: string | null;
+  body: string;
+  /** ISO timestamp. */
+  createdAt: string;
 }

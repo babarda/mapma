@@ -29,6 +29,56 @@ export default function ProfilePage() {
   const [error, setError] = useState<string | null>(null);
   const [fetching, setFetching] = useState(false);
 
+  // Public display name (profiles.username).
+  const [displayName, setDisplayName] = useState("");
+  const [savingName, setSavingName] = useState(false);
+  const [nameMsg, setNameMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (loading || !user) return;
+    let active = true;
+    (async () => {
+      try {
+        const token = await getAccessToken();
+        const res = await fetch("/api/profile", {
+          headers: token ? { authorization: `Bearer ${token}` } : undefined,
+        });
+        const data = await res.json();
+        if (active && res.ok) setDisplayName(data.username ?? "");
+      } catch {
+        /* non-fatal */
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [user, loading]);
+
+  async function saveDisplayName(e: React.FormEvent) {
+    e.preventDefault();
+    setSavingName(true);
+    setNameMsg(null);
+    try {
+      const token = await getAccessToken();
+      const res = await fetch("/api/profile", {
+        method: "PUT",
+        headers: {
+          "content-type": "application/json",
+          ...(token ? { authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ username: displayName.trim() || null }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Failed to save");
+      setDisplayName(data.username ?? "");
+      setNameMsg("Saved.");
+    } catch (e) {
+      setNameMsg(e instanceof Error ? e.message : "Failed to save");
+    } finally {
+      setSavingName(false);
+    }
+  }
+
   useEffect(() => {
     if (loading || !user) return;
     let active = true;
@@ -111,6 +161,36 @@ export default function ProfilePage() {
                 <dd className="text-ink">Contributor</dd>
               </div>
             </dl>
+
+            {/* Public display name editor */}
+            <form onSubmit={saveDisplayName} className="mt-5 border-t border-sepia-100 pt-4">
+              <label className="text-sm text-ink/70" htmlFor="displayName">
+                Public display name
+              </label>
+              <p className="mt-0.5 text-xs text-ink/50">
+                Shown as the credit on photos you contribute (e.g. &ldquo;Archives
+                du Maroc&rdquo;). Your email stays private. Leave blank to stay
+                anonymous.
+              </p>
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <input
+                  id="displayName"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  maxLength={40}
+                  placeholder="Anonymous contributor"
+                  className="min-w-0 flex-1 rounded-lg border border-sepia-200 bg-white px-3 py-2 text-sm text-ink outline-none focus:border-sepia-400"
+                />
+                <button
+                  type="submit"
+                  disabled={savingName}
+                  className="rounded-full bg-sepia-700 px-4 py-2 text-sm font-medium text-parchment transition hover:bg-sepia-800 disabled:opacity-50"
+                >
+                  {savingName ? "Saving…" : "Save"}
+                </button>
+              </div>
+              {nameMsg && <p className="mt-2 text-xs text-ink/60">{nameMsg}</p>}
+            </form>
           </section>
 
           {/* Summary counts */}

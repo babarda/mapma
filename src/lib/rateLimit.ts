@@ -17,6 +17,10 @@ const PUBLISH_WINDOW_MS = 30 * 60 * 1000; // 30 minutes
 const PUBLISH_BURST_MAX = 20; // >20 publishes in a row triggers a waiting time
 const PUBLISH_COOLDOWN_MS = 15 * 60 * 1000;
 
+const COMMENT_WINDOW_MS = 10 * 60 * 1000; // 10 minutes
+const COMMENT_MAX = 12; // comments allowed per window before a short cooldown
+const COMMENT_COOLDOWN_MS = 10 * 60 * 1000;
+
 // After this many consecutive rejected (out-of-scope) analyses, the contributor
 // is flagged as a suspension risk and shown the admin-approval warning.
 const SUSPENSION_REJECTION_THRESHOLD = 5;
@@ -24,6 +28,7 @@ const SUSPENSION_REJECTION_THRESHOLD = 5;
 interface GuardState {
   analyzeTimes: number[];
   publishTimes: number[];
+  commentTimes: number[];
   consecutiveRejections: number;
   cooldownUntil: number;
 }
@@ -33,7 +38,13 @@ const store = new Map<string, GuardState>();
 function getState(key: string): GuardState {
   let s = store.get(key);
   if (!s) {
-    s = { analyzeTimes: [], publishTimes: [], consecutiveRejections: 0, cooldownUntil: 0 };
+    s = {
+      analyzeTimes: [],
+      publishTimes: [],
+      commentTimes: [],
+      consecutiveRejections: 0,
+      cooldownUntil: 0,
+    };
     store.set(key, s);
   }
   return s;
@@ -125,6 +136,31 @@ export function checkPublish(key: string): GuardDecision {
   }
 
   return { allowed: true };
+}
+
+/** Call BEFORE creating a comment. Throttles comment spam per contributor/IP. */
+export function checkComment(key: string): GuardDecision {
+  const now = Date.now();
+  const s = getState(key);
+
+  s.commentTimes = prune(s.commentTimes, COMMENT_WINDOW_MS, now);
+  if (s.commentTimes.length >= COMMENT_MAX) {
+    return {
+      allowed: false,
+      retryAfter: Math.ceil(COMMENT_COOLDOWN_MS / 1000),
+      message:
+        "You're commenting very quickly. Please wait a little before posting again.",
+    };
+  }
+  return { allowed: true };
+}
+
+/** Call AFTER a comment is stored, to count it toward the window. */
+export function recordComment(key: string): void {
+  const now = Date.now();
+  const s = getState(key);
+  s.commentTimes = prune(s.commentTimes, COMMENT_WINDOW_MS, now);
+  s.commentTimes.push(now);
 }
 
 /** Call AFTER a publish succeeds, to count it toward the burst window. */

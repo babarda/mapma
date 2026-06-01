@@ -139,6 +139,13 @@ export default function ExploreClient({ photos }: Props) {
     setFocus((f) => ({ photo, nonce: (f?.nonce ?? 0) + 1 }));
   }
 
+  // When a marker is selected on the map, move the featured panel to that photo
+  // so both sides of the page stay in sync.
+  function syncFeatured(photo: Photo) {
+    const idx = filtered.findIndex((p) => p.id === photo.id);
+    if (idx >= 0) setFeatured(idx);
+  }
+
   function browseBy(setter: (v: string) => void, value: string) {
     setter(value);
     setDetailPhoto(null);
@@ -388,6 +395,7 @@ export default function ExploreClient({ photos }: Props) {
             <MoroccoMap
               photos={filtered}
               onOpenDetail={setDetailPhoto}
+              onSelectPhoto={syncFeatured}
               focusPhoto={focus?.photo ?? null}
               focusNonce={focus?.nonce ?? 0}
             />

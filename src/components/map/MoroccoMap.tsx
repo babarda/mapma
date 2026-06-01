@@ -22,6 +22,9 @@ interface Props {
   photos: Photo[];
   /** Called when the visitor asks to open a photo's full detail view. */
   onOpenDetail?: (photo: Photo) => void;
+  /** Called whenever a photo becomes the active selection on the map, so the
+   *  rest of the page (e.g. the featured panel) can stay in sync. */
+  onSelectPhoto?: (photo: Photo) => void;
   /** Fly to + select this photo. Re-triggered whenever `focusNonce` changes. */
   focusPhoto?: Photo | null;
   focusNonce?: number;
@@ -74,6 +77,7 @@ function ClusterThumb({
 export default function MoroccoMap({
   photos,
   onOpenDetail,
+  onSelectPhoto,
   focusPhoto,
   focusNonce,
 }: Props) {
@@ -131,15 +135,19 @@ export default function MoroccoMap({
   // Open a photo's popup and pan so the point sits in the lower-middle of the
   // frame, leaving room above for the popup (which opens upward). Without this,
   // a marker near the top edge opens a popup that's clipped by the map frame.
-  const openPhoto = useCallback((photo: Photo) => {
-    setSelected(photo);
-    const map = mapRef.current?.getMap();
-    if (!map) return;
-    const point = map.project([photo.lng, photo.lat]);
-    point.y -= map.getContainer().clientHeight * 0.22;
-    const center = map.unproject(point);
-    map.easeTo({ center, duration: 400 });
-  }, []);
+  const openPhoto = useCallback(
+    (photo: Photo) => {
+      setSelected(photo);
+      onSelectPhoto?.(photo);
+      const map = mapRef.current?.getMap();
+      if (!map) return;
+      const point = map.project([photo.lng, photo.lat]);
+      point.y -= map.getContainer().clientHeight * 0.22;
+      const center = map.unproject(point);
+      map.easeTo({ center, duration: 400 });
+    },
+    [onSelectPhoto],
+  );
 
   // Fly to a photo requested from outside (gallery / detail "Show on map").
   // Zooms in enough to break it out of any cluster, then opens its popup.

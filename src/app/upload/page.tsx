@@ -25,6 +25,10 @@ interface FormState {
   source: string;
   lng: number | null;
   lat: number | null;
+  // Raw text of the coordinate inputs, kept separate so a partial entry
+  // (e.g. "-" while typing a longitude) doesn't get wiped or coerced to NaN.
+  latText: string;
+  lngText: string;
   categories: Category[];
   tags: string;
   aiConfidence: number | null;
@@ -39,10 +43,20 @@ const EMPTY: FormState = {
   source: "",
   lng: null,
   lat: null,
+  latText: "",
+  lngText: "",
   categories: [],
   tags: "",
   aiConfidence: null,
 };
+
+// Parse coordinate text into a finite number, or null when blank/invalid.
+function parseCoord(text: string): number | null {
+  const t = text.trim();
+  if (t === "") return null;
+  const n = Number(t);
+  return Number.isFinite(n) ? n : null;
+}
 
 export default function UploadPage() {
   const router = useRouter();
@@ -108,6 +122,8 @@ export default function UploadPage() {
         source: "",
         lng: data.lng,
         lat: data.lat,
+        latText: data.lat != null ? String(data.lat) : "",
+        lngText: data.lng != null ? String(data.lng) : "",
         categories: data.categories.filter((c) => known.has(c)) as Category[],
         tags: data.tags.join(", "),
         aiConfidence: data.confidence,
@@ -423,36 +439,28 @@ export default function UploadPage() {
               <label className="text-xs text-ink/60">
                 Latitude
                 <input
-                  type="number"
-                  step="any"
+                  type="text"
                   inputMode="decimal"
                   className={field}
-                  value={form.lat ?? ""}
+                  value={form.latText}
                   placeholder="e.g. 33.5731"
                   onChange={(e) => {
-                    const v = e.target.value;
-                    setForm((f) => ({
-                      ...f,
-                      lat: v === "" ? null : Number(v),
-                    }));
+                    const t = e.target.value;
+                    setForm((f) => ({ ...f, latText: t, lat: parseCoord(t) }));
                   }}
                 />
               </label>
               <label className="text-xs text-ink/60">
                 Longitude
                 <input
-                  type="number"
-                  step="any"
+                  type="text"
                   inputMode="decimal"
                   className={field}
-                  value={form.lng ?? ""}
+                  value={form.lngText}
                   placeholder="e.g. -7.5898"
                   onChange={(e) => {
-                    const v = e.target.value;
-                    setForm((f) => ({
-                      ...f,
-                      lng: v === "" ? null : Number(v),
-                    }));
+                    const t = e.target.value;
+                    setForm((f) => ({ ...f, lngText: t, lng: parseCoord(t) }));
                   }}
                 />
               </label>
@@ -460,7 +468,15 @@ export default function UploadPage() {
             <LocationPicker
               lng={form.lng}
               lat={form.lat}
-              onChange={(lng, lat) => setForm((f) => ({ ...f, lng, lat }))}
+              onChange={(lng, lat) =>
+                setForm((f) => ({
+                  ...f,
+                  lng,
+                  lat,
+                  lngText: String(lng),
+                  latText: String(lat),
+                }))
+              }
             />
           </div>
 

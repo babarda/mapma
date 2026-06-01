@@ -18,7 +18,14 @@ interface Props {
 
 // Click or drag the pin to set the photo's location.
 export default function LocationPicker({ lng, lat, onChange }: Props) {
-  const hasPoint = lng != null && lat != null;
+  // Only treat the point as valid when both coords are finite numbers.
+  // A NaN/Infinity (e.g. mid-typing "-" in the coordinate field) would make
+  // MapLibre throw "Invalid LngLat" during render and crash the page.
+  const hasPoint =
+    lng != null &&
+    lat != null &&
+    Number.isFinite(lng) &&
+    Number.isFinite(lat);
 
   function onMapClick(e: MapLayerMouseEvent) {
     onChange(e.lngLat.lng, e.lngLat.lat);

@@ -86,14 +86,14 @@ export default function ExploreClient({ photos }: Props) {
   }
 
   return (
-    <div className="flex h-dvh w-full flex-col bg-parchment lg:flex-row">
+    <div className="flex h-dvh w-full flex-col overflow-x-hidden bg-parchment lg:flex-row">
       {/* ---------------- Left content panel ---------------- */}
       <aside className="flex w-full flex-col gap-5 overflow-y-auto border-b border-sepia-200 p-6 lg:w-[34%] lg:max-w-md lg:border-b-0 lg:border-r">
         <div className="flex items-start justify-between gap-3">
-          <Link href="/" aria-label="MAPMA home">
+          <Link href="/" aria-label="MAPMA home" className="shrink-0">
             <Logo size={30} tagline />
           </Link>
-          <nav className="flex shrink-0 flex-wrap items-center justify-end gap-x-3 gap-y-1 text-xs">
+          <nav className="flex min-w-0 flex-wrap items-center justify-end gap-x-3 gap-y-1 text-xs">
             <Link href="/about" className="text-sepia-700 hover:text-sepia-900">
               About
             </Link>
@@ -104,7 +104,7 @@ export default function ExploreClient({ photos }: Props) {
               <>
                 <Link
                   href="/profile"
-                  className="max-w-[120px] truncate text-sepia-700 hover:text-sepia-900"
+                  className="inline-block max-w-[120px] truncate align-middle text-sepia-700 hover:text-sepia-900"
                   title={user.email ?? ""}
                 >
                   {user.email}

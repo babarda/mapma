@@ -2,7 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import {
   ChevronLeft,
   ChevronRight,
@@ -42,6 +44,8 @@ interface Props {
 type View = "map" | "gallery";
 
 export default function ExploreClient({ photos }: Props) {
+  const t = useTranslations("Home");
+  const tc = useTranslations("Common");
   const { user } = useUser();
   const [query, setQuery] = useState("");
   const [range, setRange] = useState({ from: YEAR_MIN, to: YEAR_MAX });
@@ -156,10 +160,10 @@ export default function ExploreClient({ photos }: Props) {
   const navLinks = (
     <>
       <Link href="/about" className="text-sepia-700 hover:text-sepia-900">
-        About
+        {tc("about")}
       </Link>
       <Link href="/contribute" className="text-sepia-700 hover:text-sepia-900">
-        Contribute
+        {tc("contribute")}
       </Link>
       {authEnabled && user ? (
         <>
@@ -174,19 +178,19 @@ export default function ExploreClient({ photos }: Props) {
             onClick={() => getSupabaseBrowser()?.auth.signOut()}
             className="rounded-full bg-sepia-100 px-3 py-1 text-sepia-800 hover:bg-sepia-200"
           >
-            Sign out
+            {tc("signOut")}
           </button>
         </>
       ) : (
         <>
           <Link href="/login" className="text-sepia-700 hover:text-sepia-900">
-            Sign in
+            {tc("signIn")}
           </Link>
           <Link
             href="/signup"
             className="rounded-full bg-sepia-100 px-3 py-1 text-sepia-800 hover:bg-sepia-200"
           >
-            Sign up
+            {tc("signUp")}
           </Link>
         </>
       )}
@@ -196,7 +200,7 @@ export default function ExploreClient({ photos }: Props) {
   return (
     <div className="flex h-dvh w-full flex-col overflow-hidden bg-parchment lg:flex-row">
       {/* ---------------- Sidebar / mobile top panel ---------------- */}
-      <aside className="flex max-h-[58vh] w-full shrink-0 flex-col overflow-y-auto border-b border-sepia-200 lg:h-dvh lg:max-h-none lg:w-[36%] lg:max-w-md lg:shrink lg:border-b-0 lg:border-r">
+      <aside className="flex max-h-[58vh] w-full shrink-0 flex-col overflow-y-auto border-b border-sepia-200 lg:h-dvh lg:max-h-none lg:w-[36%] lg:max-w-md lg:shrink lg:border-b-0 lg:border-e">
         {/* Top bar */}
         <div className="flex items-start justify-between gap-3 px-4 pt-4 sm:px-6">
           <Link href="/" aria-label="MAPMA home" className="shrink-0">
@@ -205,15 +209,19 @@ export default function ExploreClient({ photos }: Props) {
           {/* Desktop nav */}
           <nav className="hidden min-w-0 flex-wrap items-center justify-end gap-x-3 gap-y-1 text-xs lg:flex">
             {navLinks}
+            <LanguageSwitcher />
           </nav>
-          {/* Mobile menu toggle */}
-          <button
-            onClick={() => setMenuOpen((v) => !v)}
-            aria-label="Menu"
-            className="rounded-full border border-sepia-200 p-2 text-sepia-700 lg:hidden"
-          >
-            {menuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-          </button>
+          {/* Mobile controls: always-visible language switcher + menu toggle */}
+          <div className="flex items-center gap-2 lg:hidden">
+            <LanguageSwitcher />
+            <button
+              onClick={() => setMenuOpen((v) => !v)}
+              aria-label="Menu"
+              className="rounded-full border border-sepia-200 p-2 text-sepia-700"
+            >
+              {menuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile dropdown menu */}
@@ -226,12 +234,10 @@ export default function ExploreClient({ photos }: Props) {
         {/* Hero — desktop only, to keep the map prominent on phones */}
         <div className="hidden px-6 pt-4 lg:block">
           <h2 className="font-display text-2xl leading-tight text-ink">
-            Mapping Morocco&apos;s Past
+            {t("heroTitle")}
           </h2>
           <p className="mt-2 text-sm leading-relaxed text-ink/70">
-            Explore the map and discover historical photographs from across
-            Morocco. Upload your own vintage images and help preserve the
-            country&apos;s collective memory.
+            {t("heroBody")}
           </p>
         </div>
 
@@ -246,7 +252,7 @@ export default function ExploreClient({ photos }: Props) {
                 view === "map" ? "bg-sepia-700 text-parchment" : "text-sepia-700",
               )}
             >
-              <MapIcon className="h-4 w-4" /> Map
+              <MapIcon className="h-4 w-4" /> {t("viewMap")}
             </button>
             <button
               onClick={() => setView("gallery")}
@@ -255,7 +261,7 @@ export default function ExploreClient({ photos }: Props) {
                 view === "gallery" ? "bg-sepia-700 text-parchment" : "text-sepia-700",
               )}
             >
-              <LayoutGrid className="h-4 w-4" /> Gallery
+              <LayoutGrid className="h-4 w-4" /> {t("viewGallery")}
             </button>
           </div>
 
@@ -265,7 +271,7 @@ export default function ExploreClient({ photos }: Props) {
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search city, landmark, keyword…"
+              placeholder={t("searchPlaceholder")}
               className="w-full bg-transparent text-sm text-ink outline-none placeholder:text-ink/40"
             />
           </div>
@@ -273,10 +279,17 @@ export default function ExploreClient({ photos }: Props) {
           {/* Active browse-filter chips */}
           {hasBrowseFilter && (
             <div className="flex flex-wrap gap-1.5 text-xs">
-              {city && <FilterChip label={`City: ${city}`} onClear={() => setCity("")} />}
-              {tag && <FilterChip label={`Tag: ${tag}`} onClear={() => setTag("")} />}
+              {city && (
+                <FilterChip label={t("filterCity", { value: city })} onClear={() => setCity("")} />
+              )}
+              {tag && (
+                <FilterChip label={t("filterTag", { value: tag })} onClear={() => setTag("")} />
+              )}
               {publisher && (
-                <FilterChip label={`By: ${publisher}`} onClear={() => setPublisher("")} />
+                <FilterChip
+                  label={t("filterBy", { value: publisher })}
+                  onClear={() => setPublisher("")}
+                />
               )}
             </div>
           )}
@@ -286,7 +299,7 @@ export default function ExploreClient({ photos }: Props) {
             onClick={() => setFiltersOpen((v) => !v)}
             className="flex items-center justify-between rounded-lg border border-sepia-200 bg-white/60 px-3 py-2 text-sm text-sepia-700 lg:hidden"
           >
-            <span>Filters &amp; browse</span>
+            <span>{t("filtersBrowse")}</span>
             <ChevronRight
               className={cn("h-4 w-4 transition-transform", filtersOpen && "rotate-90")}
             />
@@ -294,11 +307,24 @@ export default function ExploreClient({ photos }: Props) {
 
           {/* Filter panel (collapsible on mobile, always shown on desktop) */}
           <div className={cn("flex-col gap-3", filtersOpen ? "flex" : "hidden", "lg:flex")}>
-            <BrowseSelect label="City" value={city} options={cities} onChange={setCity} />
-            <BrowseSelect label="Tag" value={tag} options={tags} onChange={setTag} />
+            <BrowseSelect
+              label={t("selectCity")}
+              allLabel={t("all")}
+              value={city}
+              options={cities}
+              onChange={setCity}
+            />
+            <BrowseSelect
+              label={t("selectTag")}
+              allLabel={t("all")}
+              value={tag}
+              options={tags}
+              onChange={setTag}
+            />
             {publishers.length > 0 && (
               <BrowseSelect
-                label="Publisher"
+                label={t("selectPublisher")}
+                allLabel={t("all")}
                 value={publisher}
                 options={publishers}
                 onChange={setPublisher}
@@ -340,14 +366,13 @@ export default function ExploreClient({ photos }: Props) {
               href="/upload"
               className="inline-flex items-center justify-center gap-2 rounded-full bg-sepia-700 px-4 py-2.5 text-sm font-medium text-parchment transition hover:bg-sepia-800"
             >
-              <Upload className="h-4 w-4" /> Upload a photo
+              <Upload className="h-4 w-4" /> {t("uploadCta")}
             </Link>
           </div>
 
           {/* Counter */}
           <div className="text-xs text-ink/60">
-            Showing <span className="font-semibold text-ink">{filtered.length}</span> of{" "}
-            {photos.length} photographs
+            {t("showing", { count: filtered.length, total: photos.length })}
           </div>
         </div>
 
@@ -374,13 +399,13 @@ export default function ExploreClient({ photos }: Props) {
               </figcaption>
               <div className="flex items-center justify-between border-t border-sepia-100 px-4 py-2 text-xs text-sepia-600">
                 <button onClick={() => step(-1)} className="flex items-center gap-1 hover:text-sepia-800">
-                  <ChevronLeft className="h-4 w-4" /> back
+                  <ChevronLeft className="h-4 w-4" /> {t("back")}
                 </button>
                 <span className="tabular-nums">
                   {filtered.length === 0 ? 0 : featured + 1} / {filtered.length}
                 </span>
                 <button onClick={() => step(1)} className="flex items-center gap-1 hover:text-sepia-800">
-                  next <ChevronRight className="h-4 w-4" />
+                  {t("next")} <ChevronRight className="h-4 w-4" />
                 </button>
               </div>
             </figure>
@@ -440,11 +465,13 @@ function FilterChip({ label, onClear }: { label: string; onClear: () => void }) 
 
 function BrowseSelect({
   label,
+  allLabel,
   value,
   options,
   onChange,
 }: {
   label: string;
+  allLabel: string;
   value: string;
   options: string[];
   onChange: (v: string) => void;
@@ -457,7 +484,7 @@ function BrowseSelect({
         onChange={(e) => onChange(e.target.value)}
         className="w-full rounded-lg border border-sepia-200 bg-white px-2 py-1.5 text-sm text-ink outline-none focus:border-sepia-400"
       >
-        <option value="">All</option>
+        <option value="">{allLabel}</option>
         {options.map((o) => (
           <option key={o} value={o}>
             {o}

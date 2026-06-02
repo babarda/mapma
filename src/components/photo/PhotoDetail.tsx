@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { ChevronLeft, ChevronRight, MapPin, Tag, User, X } from "lucide-react";
 
 import type { Photo } from "@/lib/types";
@@ -30,6 +31,7 @@ export default function PhotoDetail({
   onSelectTag,
   onSelectPublisher,
 }: Props) {
+  const t = useTranslations("Photo");
   // Position within the gallery sequence, with wrap-around so the arrows always
   // move. Falls back gracefully if the photo isn't in the sequence.
   const idx = sequence.findIndex((p) => p.id === photo.id);
@@ -66,8 +68,8 @@ export default function PhotoDetail({
 
   const yearLabel =
     photo.year != null
-      ? `${photo.yearApproximate ? "circa " : ""}${photo.year}`
-      : "Year unknown";
+      ? `${photo.yearApproximate ? `${t("circa")} ` : ""}${photo.year}`
+      : t("yearUnknown");
 
   return (
     <div
@@ -81,7 +83,7 @@ export default function PhotoDetail({
         <button
           onClick={onClose}
           aria-label="Close"
-          className="absolute right-3 top-3 z-10 rounded-full bg-ink/55 p-1.5 text-parchment transition hover:bg-ink/80"
+          className="absolute end-3 top-3 z-10 rounded-full bg-ink/55 p-1.5 text-parchment transition hover:bg-ink/80"
         >
           <X className="h-5 w-5" />
         </button>
@@ -98,8 +100,8 @@ export default function PhotoDetail({
           {prevPhoto && (
             <button
               onClick={() => onOpenPhoto(prevPhoto)}
-              aria-label="Previous photo"
-              className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-ink/55 p-2 text-parchment transition hover:bg-ink/80"
+              aria-label={t("prevPhoto")}
+              className="absolute start-2 top-1/2 -translate-y-1/2 rounded-full bg-ink/55 p-2 text-parchment transition hover:bg-ink/80 rtl:rotate-180"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
@@ -107,8 +109,8 @@ export default function PhotoDetail({
           {nextPhoto && (
             <button
               onClick={() => onOpenPhoto(nextPhoto)}
-              aria-label="Next photo"
-              className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-ink/55 p-2 text-parchment transition hover:bg-ink/80"
+              aria-label={t("nextPhoto")}
+              className="absolute end-2 top-1/2 -translate-y-1/2 rounded-full bg-ink/55 p-2 text-parchment transition hover:bg-ink/80 rtl:rotate-180"
             >
               <ChevronRight className="h-5 w-5" />
             </button>
@@ -180,7 +182,7 @@ export default function PhotoDetail({
               <dd className="text-ink/70">
                 {photo.uploaderName ? (
                   <>
-                    Contributed by{" "}
+                    {t("contributedBy")}{" "}
                     <button
                       onClick={() => onSelectPublisher(photo.uploaderName as string)}
                       className="font-medium text-ink underline-offset-2 hover:underline"
@@ -189,14 +191,14 @@ export default function PhotoDetail({
                     </button>
                   </>
                 ) : (
-                  "Contributed by an anonymous contributor"
+                  t("anonymous")
                 )}
               </dd>
             </div>
             {photo.source && (
               <div className="text-ink/70">
                 <dt className="sr-only">Source</dt>
-                <dd className="italic">Source: {photo.source}</dd>
+                <dd className="italic">{t("source", { source: photo.source })}</dd>
               </div>
             )}
           </dl>
@@ -205,14 +207,14 @@ export default function PhotoDetail({
             onClick={() => onShowOnMap(photo)}
             className="mt-4 inline-flex items-center gap-2 rounded-full bg-sepia-700 px-4 py-2 text-sm font-medium text-parchment transition hover:bg-sepia-800"
           >
-            <MapPin className="h-4 w-4" /> Show on map
+            <MapPin className="h-4 w-4" /> {t("showOnMap")}
           </button>
 
           {/* Related from the same area */}
           {related.length > 0 && (
             <div className="mt-6">
               <h3 className="font-display text-lg text-ink">
-                More from {photo.city}
+                {t("moreFrom", { city: photo.city })}
               </h3>
               <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-4">
                 {related.map((p) => (

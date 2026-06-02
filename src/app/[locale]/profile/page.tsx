@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { ArrowLeft, ShieldCheck, Upload } from "lucide-react";
 
+import { Link } from "@/i18n/navigation";
 import type { Photo } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { authEnabled, getAccessToken, useUser } from "@/lib/useUser";
@@ -16,14 +17,17 @@ const STATUS_STYLES: Record<string, string> = {
   draft: "bg-sepia-100 text-sepia-700 border-sepia-300",
 };
 
-const STATUS_LABEL: Record<string, string> = {
-  verified: "Verified",
-  pending: "Pending review",
-  flagged: "Flagged",
-  draft: "Draft",
+const STATUS_KEY: Record<string, string> = {
+  verified: "statusVerified",
+  pending: "statusPending",
+  flagged: "statusFlagged",
+  draft: "statusDraft",
 };
 
 export default function ProfilePage() {
+  const t = useTranslations("Profile");
+  const tc = useTranslations("Common");
+  const ta = useTranslations("Auth");
   const { user, loading } = useUser();
   const [photos, setPhotos] = useState<Photo[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -75,7 +79,7 @@ export default function ProfilePage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Failed to save");
       setDisplayName(data.username ?? "");
-      setNameMsg("Saved.");
+      setNameMsg(t("saved"));
     } catch (e) {
       setNameMsg(e instanceof Error ? e.message : "Failed to save");
     } finally {
@@ -119,31 +123,31 @@ export default function ProfilePage() {
         href="/"
         className="mb-8 inline-flex items-center gap-1 text-sm text-sepia-700 hover:text-sepia-900"
       >
-        <ArrowLeft className="h-4 w-4" /> Back to the map
+        <ArrowLeft className="h-4 w-4" /> {tc("backToMap")}
       </Link>
 
       <Logo size={30} />
 
       <h1 className="mt-8 font-display text-4xl leading-tight text-ink">
-        My contributions
+        {t("title")}
       </h1>
 
       {/* Not signed in */}
       {!loading && authEnabled && !user && (
         <div className="mt-6 rounded-xl border border-sepia-200 bg-white/70 p-6 text-sm text-ink/75">
-          <p>You need to be signed in to see your profile and contributions.</p>
+          <p>{t("signedOutPrompt")}</p>
           <div className="mt-4 flex gap-3">
             <Link
               href="/login"
               className="rounded-full bg-sepia-700 px-4 py-2 text-sm font-medium text-parchment hover:bg-sepia-800"
             >
-              Sign in
+              {ta("signInBtn")}
             </Link>
             <Link
               href="/signup"
               className="rounded-full bg-sepia-100 px-4 py-2 text-sm text-sepia-800 hover:bg-sepia-200"
             >
-              Create an account
+              {ta("createAccountLink")}
             </Link>
           </div>
         </div>
@@ -154,35 +158,31 @@ export default function ProfilePage() {
         <>
           {/* Account */}
           <section className="mt-6 rounded-xl border border-sepia-200 bg-white/70 p-5">
-            <h2 className="font-display text-xl text-ink">Account</h2>
+            <h2 className="font-display text-xl text-ink">{t("account")}</h2>
             <dl className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
               <div>
-                <dt className="text-ink/50">Email</dt>
+                <dt className="text-ink/50">{t("email")}</dt>
                 <dd className="text-ink">{user.email}</dd>
               </div>
               <div>
-                <dt className="text-ink/50">Contributor level</dt>
-                <dd className="text-ink">Contributor</dd>
+                <dt className="text-ink/50">{t("level")}</dt>
+                <dd className="text-ink">{t("contributor")}</dd>
               </div>
             </dl>
 
             {/* Public display name editor */}
             <form onSubmit={saveDisplayName} className="mt-5 border-t border-sepia-100 pt-4">
               <label className="text-sm text-ink/70" htmlFor="displayName">
-                Public display name
+                {t("displayName")}
               </label>
-              <p className="mt-0.5 text-xs text-ink/50">
-                Shown as the credit on photos you contribute (e.g. &ldquo;Archives
-                du Maroc&rdquo;). Your email stays private. Leave blank to stay
-                anonymous.
-              </p>
+              <p className="mt-0.5 text-xs text-ink/50">{t("displayNameHelp")}</p>
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 <input
                   id="displayName"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
                   maxLength={40}
-                  placeholder="Anonymous contributor"
+                  placeholder={t("displayNamePlaceholder")}
                   className="min-w-0 flex-1 rounded-lg border border-sepia-200 bg-white px-3 py-2 text-sm text-ink outline-none focus:border-sepia-400"
                 />
                 <button
@@ -190,7 +190,7 @@ export default function ProfilePage() {
                   disabled={savingName}
                   className="rounded-full bg-sepia-700 px-4 py-2 text-sm font-medium text-parchment transition hover:bg-sepia-800 disabled:opacity-50"
                 >
-                  {savingName ? "Saving…" : "Save"}
+                  {savingName ? t("saving") : t("save")}
                 </button>
               </div>
               {nameMsg && <p className="mt-2 text-xs text-ink/60">{nameMsg}</p>}
@@ -202,7 +202,7 @@ export default function ProfilePage() {
                   href="/admin"
                   className="inline-flex items-center gap-1.5 rounded-full bg-ink px-4 py-2 text-sm font-medium text-parchment transition hover:bg-ink/90"
                 >
-                  <ShieldCheck className="h-4 w-4" /> Open admin dashboard
+                  <ShieldCheck className="h-4 w-4" /> {t("openAdmin")}
                 </Link>
               </div>
             )}
@@ -211,10 +211,10 @@ export default function ProfilePage() {
           {/* Summary counts */}
           <section className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
             {[
-              { key: "total", label: "Total", value: photos?.length ?? 0 },
-              { key: "verified", label: "Verified", value: counts.verified ?? 0 },
-              { key: "pending", label: "Pending", value: counts.pending ?? 0 },
-              { key: "flagged", label: "Flagged", value: counts.flagged ?? 0 },
+              { key: "total", label: t("total"), value: photos?.length ?? 0 },
+              { key: "verified", label: t("verified"), value: counts.verified ?? 0 },
+              { key: "pending", label: t("pending"), value: counts.pending ?? 0 },
+              { key: "flagged", label: t("flagged"), value: counts.flagged ?? 0 },
             ].map((c) => (
               <div
                 key={c.key}
@@ -229,22 +229,21 @@ export default function ProfilePage() {
           {/* Submissions */}
           <section className="mt-8">
             <div className="flex items-center justify-between">
-              <h2 className="font-display text-xl text-ink">Submissions</h2>
+              <h2 className="font-display text-xl text-ink">{t("submissions")}</h2>
               <Link
                 href="/upload"
                 className="inline-flex items-center gap-1.5 rounded-full bg-sepia-700 px-3 py-1.5 text-xs font-medium text-parchment hover:bg-sepia-800"
               >
-                <Upload className="h-3.5 w-3.5" /> Upload a photo
+                <Upload className="h-3.5 w-3.5" /> {t("uploadPhoto")}
               </Link>
             </div>
 
-            {fetching && <p className="mt-4 text-sm text-ink/50">Loading your contributions…</p>}
+            {fetching && <p className="mt-4 text-sm text-ink/50">{t("loadingContributions")}</p>}
             {error && <p className="mt-4 text-sm text-red-700">{error}</p>}
 
             {photos && photos.length === 0 && (
               <p className="mt-4 rounded-xl border border-sepia-200 bg-white/70 p-5 text-sm text-ink/60">
-                You haven&apos;t submitted any photographs yet. Upload your first
-                historical photo to start building the archive.
+                {t("emptySubmissions")}
               </p>
             )}
 
@@ -270,7 +269,7 @@ export default function ProfilePage() {
                             STATUS_STYLES[p.status] ?? STATUS_STYLES.draft,
                           )}
                         >
-                          {STATUS_LABEL[p.status] ?? p.status}
+                          {STATUS_KEY[p.status] ? t(STATUS_KEY[p.status]) : p.status}
                         </span>
                       </div>
                       <div className="mt-0.5 text-xs text-sepia-600">
@@ -289,12 +288,9 @@ export default function ProfilePage() {
 
           {/* Comments & feedback */}
           <section className="mt-8">
-            <h2 className="font-display text-xl text-ink">Comments &amp; feedback</h2>
+            <h2 className="font-display text-xl text-ink">{t("feedbackTitle")}</h2>
             <p className="mt-2 rounded-xl border border-sepia-200 bg-white/70 p-5 text-sm text-ink/60">
-              Curator and community feedback on your submissions will appear here
-              once the collaborative review process picks up your contributions.
-              Keep documenting — accurate sources and context help your photos get
-              verified faster.
+              {t("feedbackBody")}
             </p>
           </section>
         </>

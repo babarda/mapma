@@ -194,7 +194,6 @@ export default function ExploreClient({ photos }: Props) {
           </Link>
         </>
       )}
-      <LanguageSwitcher />
     </>
   );
 
@@ -210,15 +209,19 @@ export default function ExploreClient({ photos }: Props) {
           {/* Desktop nav */}
           <nav className="hidden min-w-0 flex-wrap items-center justify-end gap-x-3 gap-y-1 text-xs lg:flex">
             {navLinks}
+            <LanguageSwitcher />
           </nav>
-          {/* Mobile menu toggle */}
-          <button
-            onClick={() => setMenuOpen((v) => !v)}
-            aria-label="Menu"
-            className="rounded-full border border-sepia-200 p-2 text-sepia-700 lg:hidden"
-          >
-            {menuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-          </button>
+          {/* Mobile controls: always-visible language switcher + menu toggle */}
+          <div className="flex items-center gap-2 lg:hidden">
+            <LanguageSwitcher />
+            <button
+              onClick={() => setMenuOpen((v) => !v)}
+              aria-label="Menu"
+              className="rounded-full border border-sepia-200 p-2 text-sepia-700"
+            >
+              {menuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile dropdown menu */}

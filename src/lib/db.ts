@@ -296,6 +296,20 @@ export async function isAdmin(userId: string): Promise<boolean> {
   return (await getUserRole(userId)) === "admin";
 }
 
+// Sets a user's role (member | moderator | admin). Upserts so a profile row is
+// created if one doesn't exist yet. Returns the saved role.
+export async function setUserRole(userId: string, role: string): Promise<string> {
+  if (!hasSupabaseAdmin) throw new Error("Database not configured");
+  const sb = getSupabaseAdmin()!;
+  const { data, error } = await sb
+    .from("profiles")
+    .upsert({ id: userId, role }, { onConflict: "id" })
+    .select("role")
+    .single();
+  if (error) throw new Error(error.message);
+  return (data?.role as string) ?? role;
+}
+
 export interface AdminAccount {
   id: string;
   email: string | null;

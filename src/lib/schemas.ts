@@ -90,6 +90,13 @@ export const adminPhotoUpdateSchema = z.object({
 
 export type AdminPhotoUpdate = z.infer<typeof adminPhotoUpdateSchema>;
 
+// Admin changing another account's role from the dashboard.
+export const userRoleSchema = z.object({
+  role: z.enum(["member", "moderator", "admin"]),
+});
+
+export type UserRoleInput = z.infer<typeof userRoleSchema>;
+
 // Setting a public display name from the profile page. Empty clears it.
 export const displayNameSchema = z.object({
   username: z

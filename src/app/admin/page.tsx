@@ -48,6 +48,8 @@ export default function AdminPage() {
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<number | null>(null);
   const [fetching, setFetching] = useState(false);
+  const [savingRole, setSavingRole] = useState<string | null>(null);
+  const [roleError, setRoleError] = useState<string | null>(null);
 
   useEffect(() => {
     if (loading || !user) return;
@@ -77,6 +79,41 @@ export default function AdminPage() {
       active = false;
     };
   }, [user, loading]);
+
+  async function changeRole(id: string, role: string) {
+    setSavingRole(id);
+    setRoleError(null);
+    // Optimistic update.
+    setAccounts((as) =>
+      as ? as.map((a) => (a.id === id ? { ...a, role } : a)) : as,
+    );
+    try {
+      const token = await getAccessToken();
+      const res = await fetch(`/api/admin/accounts/${id}`, {
+        method: "PATCH",
+        headers: {
+          "content-type": "application/json",
+          ...(token ? { authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ role }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Failed to update role");
+    } catch (e) {
+      setRoleError(e instanceof Error ? e.message : "Failed to update role");
+      // Reload to resync after a failed change.
+      const token = await getAccessToken();
+      const res = await fetch("/api/admin/accounts", {
+        headers: token ? { authorization: `Bearer ${token}` } : undefined,
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setAccounts(data.accounts as Account[]);
+      }
+    } finally {
+      setSavingRole(null);
+    }
+  }
 
   const forbidden = status === 403;
 
@@ -170,6 +207,11 @@ export default function AdminPage() {
 
           <section className="mt-8">
             <h2 className="font-display text-xl text-ink">All accounts</h2>
+            <p className="mt-1 text-xs text-ink/50">
+              Change a member&apos;s role with the dropdown. Admins manage
+              everything; moderators are reserved for future review tools.
+            </p>
+            {roleError && <p className="mt-2 text-sm text-red-700">{roleError}</p>}
             <div className="mt-3 overflow-x-auto rounded-xl border border-sepia-200 bg-white/70">
               <table className="w-full min-w-[640px] text-left text-sm">
                 <thead>
@@ -195,13 +237,23 @@ export default function AdminPage() {
                         )}
                       </td>
                       <td className="px-4 py-3">
-                        <span
-                          className={`rounded-full border px-2 py-0.5 text-[0.65rem] font-medium ${
+                        <select
+                          value={a.role}
+                          disabled={savingRole === a.id || a.id === user?.id}
+                          onChange={(e) => changeRole(a.id, e.target.value)}
+                          title={
+                            a.id === user?.id
+                              ? "You can't change your own role"
+                              : "Change role"
+                          }
+                          className={`rounded-full border px-2 py-1 text-xs font-medium outline-none disabled:opacity-60 ${
                             ROLE_STYLES[a.role] ?? ROLE_STYLES.member
                           }`}
                         >
-                          {a.role}
-                        </span>
+                          <option value="member">member</option>
+                          <option value="moderator">moderator</option>
+                          <option value="admin">admin</option>
+                        </select>
                       </td>
                       <td className="px-4 py-3 text-right tabular-nums text-ink/80">
                         {a.photoCount}

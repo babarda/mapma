@@ -1,0 +1,62 @@
+{
+  "Common": {
+    "about": "À propos",
+    "contribute": "Contribuer",
+    "signIn": "Connexion",
+    "signUp": "Créer un compte",
+    "signOut": "Déconnexion",
+    "profile": "Profil",
+    "backToMap": "Retour à la carte"
+  },
+  "Language": {
+    "label": "Langue"
+  },
+  "Home": {
+    "heroTitle": "Cartographier le passé du Maroc",
+    "heroBody": "Explorez la carte et découvrez des photographies historiques de tout le Maroc. Partagez vos propres images anciennes et aidez à préserver la mémoire collective du pays.",
+    "searchPlaceholder": "Rechercher une ville, un lieu, un mot-clé…",
+    "viewMap": "Carte",
+    "viewGallery": "Galerie",
+    "filtersBrowse": "Filtres et navigation",
+    "selectCity": "Ville",
+    "selectTag": "Étiquette",
+    "selectPublisher": "Éditeur",
+    "all": "Tous",
+    "uploadCta": "Ajouter une photo",
+    "showing": "{count} sur {total} photographies",
+    "filterCity": "Ville : {value}",
+    "filterTag": "Étiquette : {value}",
+    "filterBy": "Par : {value}",
+    "back": "précédent",
+    "next": "suivant"
+  },
+  "Gallery": {
+    "empty": "Aucune photographie ne correspond à vos filtres. Essayez d'effacer la recherche ou d'élargir les années."
+  },
+  "Photo": {
+    "yearUnknown": "Année inconnue",
+    "circa": "vers",
+    "moreFrom": "Plus de {city}",
+    "showOnMap": "Voir sur la carte",
+    "contributedByName": "Contribué par {name}",
+    "anonymous": "Contribué par un contributeur anonyme",
+    "source": "Source : {source}",
+    "viewDetails": "Voir les détails et commentaires",
+    "prevPhoto": "Photo précédente",
+    "nextPhoto": "Photo suivante"
+  },
+  "Comments": {
+    "title": "Commentaires",
+    "loading": "Chargement des commentaires…",
+    "empty": "Aucun commentaire pour l'instant. Partagez ce que vous savez sur cette photographie.",
+    "anonymous": "Anonyme",
+    "namePlaceholder": "Votre nom (facultatif)",
+    "bodyPlaceholder": "Ajoutez un commentaire, un souvenir ou une correction…",
+    "post": "Publier",
+    "posting": "Publication…",
+    "justNow": "à l'instant",
+    "minutesAgo": "il y a {m} min",
+    "hoursAgo": "il y a {h} h",
+    "daysAgo": "il y a {d} j"
+  }
+}

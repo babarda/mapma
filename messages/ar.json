@@ -1,0 +1,62 @@
+{
+  "Common": {
+    "about": "حول",
+    "contribute": "ساهم",
+    "signIn": "تسجيل الدخول",
+    "signUp": "إنشاء حساب",
+    "signOut": "تسجيل الخروج",
+    "profile": "الملف الشخصي",
+    "backToMap": "العودة إلى الخريطة"
+  },
+  "Language": {
+    "label": "اللغة"
+  },
+  "Home": {
+    "heroTitle": "رسم ماضي المغرب على الخريطة",
+    "heroBody": "استكشف الخريطة واكتشف صورًا تاريخية من جميع أنحاء المغرب. شارك صورك القديمة وساعد في الحفاظ على الذاكرة الجماعية للبلاد.",
+    "searchPlaceholder": "ابحث عن مدينة أو معلم أو كلمة مفتاحية…",
+    "viewMap": "الخريطة",
+    "viewGallery": "المعرض",
+    "filtersBrowse": "التصفية والتصفّح",
+    "selectCity": "المدينة",
+    "selectTag": "الوسم",
+    "selectPublisher": "الناشر",
+    "all": "الكل",
+    "uploadCta": "أضف صورة",
+    "showing": "عرض {count} من {total} صورة",
+    "filterCity": "المدينة: {value}",
+    "filterTag": "الوسم: {value}",
+    "filterBy": "بواسطة: {value}",
+    "back": "السابق",
+    "next": "التالي"
+  },
+  "Gallery": {
+    "empty": "لا توجد صور تطابق عوامل التصفية. حاول مسح البحث أو توسيع نطاق السنوات."
+  },
+  "Photo": {
+    "yearUnknown": "سنة غير معروفة",
+    "circa": "حوالي",
+    "moreFrom": "المزيد من {city}",
+    "showOnMap": "إظهار على الخريطة",
+    "contributedByName": "ساهم بها {name}",
+    "anonymous": "ساهم بها مساهم مجهول",
+    "source": "المصدر: {source}",
+    "viewDetails": "عرض التفاصيل والتعليقات",
+    "prevPhoto": "الصورة السابقة",
+    "nextPhoto": "الصورة التالية"
+  },
+  "Comments": {
+    "title": "التعليقات",
+    "loading": "جارٍ تحميل التعليقات…",
+    "empty": "لا توجد تعليقات بعد. شارك ما تعرفه عن هذه الصورة.",
+    "anonymous": "مجهول",
+    "namePlaceholder": "اسمك (اختياري)",
+    "bodyPlaceholder": "أضف تعليقًا أو ذكرى أو تصحيحًا…",
+    "post": "نشر التعليق",
+    "posting": "جارٍ النشر…",
+    "justNow": "الآن",
+    "minutesAgo": "قبل {m} دقيقة",
+    "hoursAgo": "قبل {h} ساعة",
+    "daysAgo": "قبل {d} يوم"
+  }
+}

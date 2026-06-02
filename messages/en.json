@@ -1,0 +1,62 @@
+{
+  "Common": {
+    "about": "About",
+    "contribute": "Contribute",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "signOut": "Sign out",
+    "profile": "Profile",
+    "backToMap": "Back to the map"
+  },
+  "Language": {
+    "label": "Language"
+  },
+  "Home": {
+    "heroTitle": "Mapping Morocco's Past",
+    "heroBody": "Explore the map and discover historical photographs from across Morocco. Upload your own vintage images and help preserve the country's collective memory.",
+    "searchPlaceholder": "Search city, landmark, keyword…",
+    "viewMap": "Map",
+    "viewGallery": "Gallery",
+    "filtersBrowse": "Filters & browse",
+    "selectCity": "City",
+    "selectTag": "Tag",
+    "selectPublisher": "Publisher",
+    "all": "All",
+    "uploadCta": "Upload a photo",
+    "showing": "Showing {count} of {total} photographs",
+    "filterCity": "City: {value}",
+    "filterTag": "Tag: {value}",
+    "filterBy": "By: {value}",
+    "back": "back",
+    "next": "next"
+  },
+  "Gallery": {
+    "empty": "No photographs match your filters yet. Try clearing the search or widening the years."
+  },
+  "Photo": {
+    "yearUnknown": "Year unknown",
+    "circa": "circa",
+    "moreFrom": "More from {city}",
+    "showOnMap": "Show on map",
+    "contributedByName": "Contributed by {name}",
+    "anonymous": "Contributed by an anonymous contributor",
+    "source": "Source: {source}",
+    "viewDetails": "View details & comments",
+    "prevPhoto": "Previous photo",
+    "nextPhoto": "Next photo"
+  },
+  "Comments": {
+    "title": "Comments",
+    "loading": "Loading comments…",
+    "empty": "No comments yet. Share what you know about this photograph.",
+    "anonymous": "Anonymous",
+    "namePlaceholder": "Your name (optional)",
+    "bodyPlaceholder": "Add a comment, a memory, or a correction…",
+    "post": "Post comment",
+    "posting": "Posting…",
+    "justNow": "just now",
+    "minutesAgo": "{m}m ago",
+    "hoursAgo": "{h}h ago",
+    "daysAgo": "{d}d ago"
+  }
+}

@@ -58,5 +58,21 @@
     "minutesAgo": "il y a {m} min",
     "hoursAgo": "il y a {h} h",
     "daysAgo": "il y a {d} j"
+  },
+  "Auth": {
+    "signInTitle": "Connexion",
+    "signUpTitle": "Créer un compte",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "passwordMin": "Mot de passe (6 caractères min.)",
+    "signInBtn": "Se connecter",
+    "signingIn": "Connexion…",
+    "createBtn": "Créer le compte",
+    "creating": "Création…",
+    "newHere": "Nouveau ici ?",
+    "createAccountLink": "Créer un compte",
+    "haveAccount": "Vous avez déjà un compte ?",
+    "signInLink": "Se connecter",
+    "confirmEmailNotice": "Vérifiez votre e-mail pour confirmer votre compte, puis connectez-vous."
   }
 }

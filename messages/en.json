@@ -58,5 +58,21 @@
     "minutesAgo": "{m}m ago",
     "hoursAgo": "{h}h ago",
     "daysAgo": "{d}d ago"
+  },
+  "Auth": {
+    "signInTitle": "Sign in",
+    "signUpTitle": "Create an account",
+    "email": "Email",
+    "password": "Password",
+    "passwordMin": "Password (min 6 chars)",
+    "signInBtn": "Sign in",
+    "signingIn": "Signing in…",
+    "createBtn": "Create account",
+    "creating": "Creating…",
+    "newHere": "New here?",
+    "createAccountLink": "Create an account",
+    "haveAccount": "Already have an account?",
+    "signInLink": "Sign in",
+    "confirmEmailNotice": "Check your email to confirm your account, then sign in."
   }
 }

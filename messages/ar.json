@@ -58,5 +58,21 @@
     "minutesAgo": "قبل {m} دقيقة",
     "hoursAgo": "قبل {h} ساعة",
     "daysAgo": "قبل {d} يوم"
+  },
+  "Auth": {
+    "signInTitle": "تسجيل الدخول",
+    "signUpTitle": "إنشاء حساب",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "passwordMin": "كلمة المرور (٦ أحرف على الأقل)",
+    "signInBtn": "تسجيل الدخول",
+    "signingIn": "جارٍ تسجيل الدخول…",
+    "createBtn": "إنشاء الحساب",
+    "creating": "جارٍ الإنشاء…",
+    "newHere": "جديد هنا؟",
+    "createAccountLink": "إنشاء حساب",
+    "haveAccount": "لديك حساب بالفعل؟",
+    "signInLink": "تسجيل الدخول",
+    "confirmEmailNotice": "تحقق من بريدك الإلكتروني لتأكيد حسابك، ثم سجّل الدخول."
   }
 }

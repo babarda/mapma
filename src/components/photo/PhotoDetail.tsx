@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { MapPin, Tag, User, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, MapPin, Tag, User, X } from "lucide-react";
 
 import type { Photo } from "@/lib/types";
 import Comments from "./Comments";
@@ -9,6 +9,8 @@ import Comments from "./Comments";
 interface Props {
   photo: Photo;
   all: Photo[];
+  /** Ordered list to step through with the prev/next arrows (the gallery view). */
+  sequence: Photo[];
   onClose: () => void;
   onShowOnMap: (photo: Photo) => void;
   onOpenPhoto: (photo: Photo) => void;
@@ -20,6 +22,7 @@ interface Props {
 export default function PhotoDetail({
   photo,
   all,
+  sequence,
   onClose,
   onShowOnMap,
   onOpenPhoto,
@@ -27,9 +30,22 @@ export default function PhotoDetail({
   onSelectTag,
   onSelectPublisher,
 }: Props) {
-  // Close on Escape; lock body scroll while open.
+  // Position within the gallery sequence, with wrap-around so the arrows always
+  // move. Falls back gracefully if the photo isn't in the sequence.
+  const idx = sequence.findIndex((p) => p.id === photo.id);
+  const count = sequence.length;
+  const prevPhoto =
+    count > 1 && idx >= 0 ? sequence[(idx - 1 + count) % count] : null;
+  const nextPhoto =
+    count > 1 && idx >= 0 ? sequence[(idx + 1) % count] : null;
+
+  // Close on Escape, navigate with arrow keys; lock body scroll while open.
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      else if (e.key === "ArrowLeft" && prevPhoto) onOpenPhoto(prevPhoto);
+      else if (e.key === "ArrowRight" && nextPhoto) onOpenPhoto(nextPhoto);
+    };
     window.addEventListener("keydown", onKey);
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -37,7 +53,7 @@ export default function PhotoDetail({
       window.removeEventListener("keydown", onKey);
       document.body.style.overflow = prev;
     };
-  }, [onClose]);
+  }, [onClose, onOpenPhoto, prevPhoto, nextPhoto]);
 
   // Other photographs from the same city/area.
   const related = all
@@ -70,12 +86,39 @@ export default function PhotoDetail({
           <X className="h-5 w-5" />
         </button>
 
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={photo.imageUrl}
-          alt={photo.title}
-          className="max-h-[60vh] w-full bg-ink/5 object-contain sm:rounded-t-2xl"
-        />
+        <div className="relative bg-ink/5 sm:rounded-t-2xl">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={photo.imageUrl}
+            alt={photo.title}
+            className="max-h-[60vh] w-full object-contain sm:rounded-t-2xl"
+          />
+
+          {/* Prev / next through the gallery sequence */}
+          {prevPhoto && (
+            <button
+              onClick={() => onOpenPhoto(prevPhoto)}
+              aria-label="Previous photo"
+              className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-ink/55 p-2 text-parchment transition hover:bg-ink/80"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+          )}
+          {nextPhoto && (
+            <button
+              onClick={() => onOpenPhoto(nextPhoto)}
+              aria-label="Next photo"
+              className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-ink/55 p-2 text-parchment transition hover:bg-ink/80"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          )}
+          {count > 1 && idx >= 0 && (
+            <span className="absolute bottom-2 left-1/2 -translate-x-1/2 rounded-full bg-ink/55 px-2.5 py-0.5 text-xs tabular-nums text-parchment">
+              {idx + 1} / {count}
+            </span>
+          )}
+        </div>
 
         <div className="p-5 sm:p-6">
           <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-sepia-600">

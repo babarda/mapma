@@ -413,6 +413,7 @@ export default function ExploreClient({ photos }: Props) {
         <PhotoDetail
           photo={detailPhoto}
           all={photos}
+          sequence={filtered}
           onClose={() => setDetailPhoto(null)}
           onShowOnMap={showOnMap}
           onOpenPhoto={setDetailPhoto}

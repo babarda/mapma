@@ -34,6 +34,9 @@ yarn-error.log*
 /.data
 /public/uploads
 
+# local backups (DB + image exports) — keep these OFF git, copy to a safe drive
+/backups
+
 # local dev logs + editor/agent config
 dev-out.log
 dev-err.log

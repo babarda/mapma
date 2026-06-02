@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, ShieldAlert, Users } from "lucide-react";
+import { ArrowLeft, Images, ShieldAlert, Users } from "lucide-react";
 
 import { getAccessToken, useUser } from "@/lib/useUser";
 import Logo from "@/components/Logo";
@@ -134,6 +134,15 @@ export default function AdminPage() {
       {/* Admin content */}
       {user && stats && accounts && (
         <>
+          <div className="mt-6">
+            <Link
+              href="/admin/photos"
+              className="inline-flex items-center gap-2 rounded-full bg-sepia-700 px-4 py-2 text-sm font-medium text-parchment transition hover:bg-sepia-800"
+            >
+              <Images className="h-4 w-4" /> Manage photos
+            </Link>
+          </div>
+
           <section className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
             {[
               { key: "total", label: "Total accounts", value: stats.total },

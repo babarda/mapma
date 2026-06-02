@@ -3,6 +3,8 @@ import "server-only";
 import { hasSupabaseAdmin } from "./env";
 import { getSupabaseAdmin } from "./supabase/server";
 import { rowToPhoto, type PhotoRow } from "./photoRow";
+import { deleteImage, keyFromUrl } from "./storage";
+import type { AdminPhotoUpdate } from "./schemas";
 import type { Comment, Photo } from "./types";
 import { SAMPLE_PHOTOS } from "@/data/samplePhotos";
 
@@ -289,6 +291,11 @@ export async function getUserRole(userId: string): Promise<string | null> {
   return (data?.role as string | null) ?? null;
 }
 
+// True when the user has the admin role.
+export async function isAdmin(userId: string): Promise<boolean> {
+  return (await getUserRole(userId)) === "admin";
+}
+
 export interface AdminAccount {
   id: string;
   email: string | null;
@@ -350,4 +357,90 @@ export async function listAccounts(): Promise<AdminAccount[]> {
       };
     })
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
+// ---------------------------------------------------------------------------
+// Admin photo management (edit any field/location, delete with image cleanup)
+// ---------------------------------------------------------------------------
+
+// Every photo, any status, newest first, with the uploader's display name.
+export async function listAllPhotos(): Promise<Photo[]> {
+  if (!hasSupabaseAdmin) {
+    const local = await readLocal();
+    return [...SAMPLE_PHOTOS, ...local];
+  }
+  const sb = getSupabaseAdmin()!;
+  const { data, error } = await sb
+    .from("photos")
+    .select(PHOTO_SELECT)
+    .order("created_at", { ascending: false })
+    .limit(5000);
+  if (error) throw new Error(error.message);
+  return (data as PhotoRow[]).map(rowToPhoto);
+}
+
+// Updates the provided fields of a photo (admin). `decade` is a generated
+// column in Postgres, so we never write it. Returns the updated Photo.
+export async function updatePhotoAdmin(
+  id: string,
+  fields: AdminPhotoUpdate,
+): Promise<Photo> {
+  if (!hasSupabaseAdmin) throw new Error("Database not configured");
+  const sb = getSupabaseAdmin()!;
+
+  // Map camelCase API fields → snake_case DB columns, only when present.
+  const patch: Record<string, unknown> = {};
+  if (fields.title !== undefined) patch.title = fields.title;
+  if (fields.description !== undefined) patch.description = fields.description;
+  if (fields.city !== undefined) patch.city = fields.city;
+  if (fields.region !== undefined) patch.region = fields.region;
+  if (fields.lng !== undefined) patch.lng = fields.lng;
+  if (fields.lat !== undefined) patch.lat = fields.lat;
+  if (fields.year !== undefined) patch.year = fields.year;
+  if (fields.yearApproximate !== undefined)
+    patch.year_approximate = fields.yearApproximate;
+  if (fields.categories !== undefined) patch.categories = fields.categories;
+  if (fields.tags !== undefined) patch.tags = fields.tags;
+  if (fields.source !== undefined) patch.source = fields.source;
+  if (fields.status !== undefined) patch.status = fields.status;
+  patch.updated_at = new Date().toISOString();
+
+  const { data, error } = await sb
+    .from("photos")
+    .update(patch)
+    .eq("id", id)
+    .select(PHOTO_SELECT)
+    .single();
+  if (error) throw new Error(error.message);
+  return rowToPhoto(data as PhotoRow);
+}
+
+// Deletes a photo row AND its image + thumbnail from storage (best-effort).
+export async function deletePhotoById(id: string): Promise<void> {
+  if (!hasSupabaseAdmin) throw new Error("Database not configured");
+  const sb = getSupabaseAdmin()!;
+
+  // Fetch the URLs first so we can clean up storage after the row is gone.
+  const { data, error } = await sb
+    .from("photos")
+    .select("image_url, thumbnail_url")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!data) return; // already deleted
+
+  const { error: delErr } = await sb.from("photos").delete().eq("id", id);
+  if (delErr) throw new Error(delErr.message);
+
+  // Remove the underlying objects. Failures here are non-fatal.
+  for (const url of [data.image_url as string, data.thumbnail_url as string]) {
+    const key = url ? keyFromUrl(url) : null;
+    if (key) {
+      try {
+        await deleteImage(key);
+      } catch {
+        /* leave orphaned object rather than fail the delete */
+      }
+    }
+  }
 }

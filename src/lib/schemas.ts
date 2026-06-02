@@ -65,6 +65,31 @@ export const commentSchema = z.object({
 
 export type CommentInput = z.infer<typeof commentSchema>;
 
+// Admin edit of any photo's metadata + location. Every field is optional so
+// the dashboard can send partial updates; only provided keys are changed.
+export const adminPhotoUpdateSchema = z.object({
+  title: z.string().trim().min(1, "Title is required").optional(),
+  description: z.string().nullable().optional(),
+  city: z.string().trim().min(1, "City is required").optional(),
+  region: z.string().trim().nullable().optional(),
+  lng: z
+    .number()
+    .refine((n) => n >= -18 && n <= 1, "Longitude out of range")
+    .optional(),
+  lat: z
+    .number()
+    .refine((n) => n >= 20 && n <= 37, "Latitude out of range")
+    .optional(),
+  year: z.number().int().min(1800).max(1999).nullable().optional(),
+  yearApproximate: z.boolean().optional(),
+  categories: z.array(z.string()).optional(),
+  tags: z.array(z.string()).optional(),
+  source: z.string().trim().max(55).nullable().optional(),
+  status: z.enum(["draft", "pending", "verified", "flagged"]).optional(),
+});
+
+export type AdminPhotoUpdate = z.infer<typeof adminPhotoUpdateSchema>;
+
 // Setting a public display name from the profile page. Empty clears it.
 export const displayNameSchema = z.object({
   username: z

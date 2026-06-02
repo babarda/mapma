@@ -38,7 +38,7 @@
     "circa": "vers",
     "moreFrom": "Plus de {city}",
     "showOnMap": "Voir sur la carte",
-    "contributedByName": "Contribué par {name}",
+    "contributedBy": "Contribué par",
     "anonymous": "Contribué par un contributeur anonyme",
     "source": "Source : {source}",
     "viewDetails": "Voir les détails et commentaires",

@@ -1,27 +1,30 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { MessageCircle, Send } from "lucide-react";
 
 import type { Comment } from "@/lib/types";
 import { getAccessToken, useUser } from "@/lib/useUser";
 
-function timeAgo(iso: string): string {
-  const then = new Date(iso).getTime();
-  if (Number.isNaN(then)) return "";
-  const s = Math.floor((Date.now() - then) / 1000);
-  if (s < 60) return "just now";
-  const m = Math.floor(s / 60);
-  if (m < 60) return `${m}m ago`;
-  const h = Math.floor(m / 60);
-  if (h < 24) return `${h}h ago`;
-  const d = Math.floor(h / 24);
-  if (d < 30) return `${d}d ago`;
-  return new Date(iso).toLocaleDateString();
-}
-
 export default function Comments({ photoId }: { photoId: string }) {
+  const t = useTranslations("Comments");
   const { user } = useUser();
+
+  function timeAgo(iso: string): string {
+    const then = new Date(iso).getTime();
+    if (Number.isNaN(then)) return "";
+    const s = Math.floor((Date.now() - then) / 1000);
+    if (s < 60) return t("justNow");
+    const m = Math.floor(s / 60);
+    if (m < 60) return t("minutesAgo", { m });
+    const h = Math.floor(m / 60);
+    if (h < 24) return t("hoursAgo", { h });
+    const d = Math.floor(h / 24);
+    if (d < 30) return t("daysAgo", { d });
+    return new Date(iso).toLocaleDateString();
+  }
+
   const [comments, setComments] = useState<Comment[] | null>(null);
   const [body, setBody] = useState("");
   const [name, setName] = useState("");
@@ -86,7 +89,7 @@ export default function Comments({ photoId }: { photoId: string }) {
     <section className="mt-6">
       <h3 className="flex items-center gap-2 font-display text-lg text-ink">
         <MessageCircle className="h-4 w-4 text-sepia-600" />
-        Comments
+        {t("title")}
         {comments && comments.length > 0 && (
           <span className="text-sm font-normal text-ink/40">({comments.length})</span>
         )}
@@ -94,17 +97,15 @@ export default function Comments({ photoId }: { photoId: string }) {
 
       {/* Existing comments */}
       <ul className="mt-3 space-y-3">
-        {comments === null && <li className="text-sm text-ink/40">Loading comments…</li>}
+        {comments === null && <li className="text-sm text-ink/40">{t("loading")}</li>}
         {comments && comments.length === 0 && (
-          <li className="text-sm text-ink/50">
-            No comments yet. Share what you know about this photograph.
-          </li>
+          <li className="text-sm text-ink/50">{t("empty")}</li>
         )}
         {comments?.map((c) => (
           <li key={c.id} className="rounded-lg border border-sepia-200 bg-white/70 p-3">
             <div className="flex items-baseline justify-between gap-2">
               <span className="text-sm font-medium text-ink">
-                {c.authorName || "Anonymous"}
+                {c.authorName || t("anonymous")}
               </span>
               <span className="shrink-0 text-[11px] text-ink/40">{timeAgo(c.createdAt)}</span>
             </div>
@@ -131,7 +132,7 @@ export default function Comments({ photoId }: { photoId: string }) {
             value={name}
             onChange={(e) => setName(e.target.value)}
             maxLength={40}
-            placeholder="Your name (optional)"
+            placeholder={t("namePlaceholder")}
             className="w-full rounded-lg border border-sepia-200 bg-white px-3 py-2 text-sm text-ink outline-none focus:border-sepia-400"
           />
         )}
@@ -140,7 +141,7 @@ export default function Comments({ photoId }: { photoId: string }) {
           onChange={(e) => setBody(e.target.value)}
           maxLength={1000}
           rows={3}
-          placeholder="Add a comment, a memory, or a correction…"
+          placeholder={t("bodyPlaceholder")}
           className="w-full rounded-lg border border-sepia-200 bg-white px-3 py-2 text-sm text-ink outline-none focus:border-sepia-400"
         />
         {error && <p className="text-sm text-red-700">{error}</p>}
@@ -151,7 +152,7 @@ export default function Comments({ photoId }: { photoId: string }) {
             className="inline-flex items-center gap-2 rounded-full bg-sepia-700 px-4 py-2 text-sm font-medium text-parchment transition hover:bg-sepia-800 disabled:opacity-50"
           >
             <Send className="h-3.5 w-3.5" />
-            {posting ? "Posting…" : "Post comment"}
+            {posting ? t("posting") : t("post")}
           </button>
         </div>
       </form>

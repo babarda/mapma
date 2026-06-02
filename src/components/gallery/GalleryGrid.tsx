@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { MapPin } from "lucide-react";
 
 import type { Photo } from "@/lib/types";
@@ -12,11 +13,11 @@ interface Props {
 // A responsive archival "contact sheet" of photo cards. Tapping a card opens
 // the full detail view (with related photos + comments).
 export default function GalleryGrid({ photos, onOpen }: Props) {
+  const t = useTranslations("Gallery");
   if (photos.length === 0) {
     return (
       <div className="flex h-full items-center justify-center p-8 text-center text-sm text-ink/50">
-        No photographs match your filters yet. Try clearing the search or
-        widening the years.
+        {t("empty")}
       </div>
     );
   }

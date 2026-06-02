@@ -38,7 +38,7 @@
     "circa": "circa",
     "moreFrom": "More from {city}",
     "showOnMap": "Show on map",
-    "contributedByName": "Contributed by {name}",
+    "contributedBy": "Contributed by",
     "anonymous": "Contributed by an anonymous contributor",
     "source": "Source: {source}",
     "viewDetails": "View details & comments",

@@ -19,6 +19,14 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Arabic (RTL): the Latin display/body faces don't cover Arabic glyphs, so
+   swap to the Arabic-capable face. dir="rtl" is set on <html> by the layout,
+   which also mirrors logical layout properties (ms-/me-/ps-/pe-/start-/end-). */
+[dir="rtl"] body,
+[dir="rtl"] .font-display {
+  font-family: var(--font-arabic), var(--font-body), system-ui, sans-serif;
+}
+
 /* MapLibre popups restyled to match the archival aesthetic. */
 .maplibregl-popup-content {
   padding: 0;

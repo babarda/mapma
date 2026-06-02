@@ -201,7 +201,7 @@ export default function ExploreClient({ photos }: Props) {
   return (
     <div className="flex h-dvh w-full flex-col overflow-hidden bg-parchment lg:flex-row">
       {/* ---------------- Sidebar / mobile top panel ---------------- */}
-      <aside className="flex max-h-[58vh] w-full shrink-0 flex-col overflow-y-auto border-b border-sepia-200 lg:h-dvh lg:max-h-none lg:w-[36%] lg:max-w-md lg:shrink lg:border-b-0 lg:border-r">
+      <aside className="flex max-h-[58vh] w-full shrink-0 flex-col overflow-y-auto border-b border-sepia-200 lg:h-dvh lg:max-h-none lg:w-[36%] lg:max-w-md lg:shrink lg:border-b-0 lg:border-e">
         {/* Top bar */}
         <div className="flex items-start justify-between gap-3 px-4 pt-4 sm:px-6">
           <Link href="/" aria-label="MAPMA home" className="shrink-0">

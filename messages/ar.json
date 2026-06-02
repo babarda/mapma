@@ -38,7 +38,7 @@
     "circa": "حوالي",
     "moreFrom": "المزيد من {city}",
     "showOnMap": "إظهار على الخريطة",
-    "contributedByName": "ساهم بها {name}",
+    "contributedBy": "ساهم بها",
     "anonymous": "ساهم بها مساهم مجهول",
     "source": "المصدر: {source}",
     "viewDetails": "عرض التفاصيل والتعليقات",

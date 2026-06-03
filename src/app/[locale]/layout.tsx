@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Playfair_Display, Inter, Noto_Naskh_Arabic } from "next/font/google";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
-import { setRequestLocale } from "next-intl/server";
+import { getMessages, setRequestLocale } from "next-intl/server";
 
 import "../globals.css";
 import { routing } from "@/i18n/routing";
@@ -56,7 +56,7 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
-export default function LocaleLayout({
+export default async function LocaleLayout({
   children,
   params: { locale },
 }: {
@@ -67,6 +67,9 @@ export default function LocaleLayout({
   // Enable static rendering for this locale.
   setRequestLocale(locale);
 
+  // Pass the catalog explicitly so Client Components (e.g. ExploreClient) can
+  // resolve translations — without this they render raw message keys.
+  const messages = await getMessages();
   const dir = locale === "ar" ? "rtl" : "ltr";
 
   return (
@@ -76,7 +79,9 @@ export default function LocaleLayout({
       className={`${display.variable} ${body.variable} ${arabic.variable}`}
     >
       <body>
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider messages={messages}>
+          {children}
+        </NextIntlClientProvider>
       </body>
     </html>
   );

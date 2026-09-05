@@ -5,6 +5,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 
 import "../globals.css";
+import Tracker from "@/components/analytics/Tracker";
 import { routing } from "@/i18n/routing";
 
 const display = Playfair_Display({
@@ -82,6 +83,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider messages={messages}>
           {children}
         </NextIntlClientProvider>
+        <Tracker />
       </body>
     </html>
   );

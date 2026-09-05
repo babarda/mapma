@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Images, ShieldAlert, Users } from "lucide-react";
+import { ArrowLeft, BarChart3, Images, ShieldAlert, Users } from "lucide-react";
 
 import { getAccessToken, useUser } from "@/lib/useUser";
 import Logo from "@/components/Logo";
@@ -171,12 +171,18 @@ export default function AdminPage() {
       {/* Admin content */}
       {user && stats && accounts && (
         <>
-          <div className="mt-6">
+          <div className="mt-6 flex flex-wrap gap-2">
             <Link
               href="/admin/photos"
               className="inline-flex items-center gap-2 rounded-full bg-sepia-700 px-4 py-2 text-sm font-medium text-parchment transition hover:bg-sepia-800"
             >
               <Images className="h-4 w-4" /> Manage photos
+            </Link>
+            <Link
+              href="/admin/analytics"
+              className="inline-flex items-center gap-2 rounded-full border border-sepia-300 bg-white/70 px-4 py-2 text-sm font-medium text-sepia-800 transition hover:bg-sepia-50"
+            >
+              <BarChart3 className="h-4 w-4" /> Visitors
             </Link>
           </div>
 
